@@ -87,45 +87,58 @@ async function extractFromGemini(rows) {
   }
 
   const prompt = buildPrompt(rows);
+  const maxRetries = 3;
+  let attempt = 0;
+  let delay = 1000;
 
-  const response = await fetch(GEMINI_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0 },
-    }),
-  });
-
-  if (!response.ok) {
-    let errorText = "";
+  while (attempt <= maxRetries) {
     try {
-      errorText = await response.text();
-    } catch {
-      errorText = "";
+      const response = await fetch(GEMINI_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0 },
+        }),
+      });
+
+      if (!response.ok) {
+        let errorText = "";
+        try {
+          errorText = await response.text();
+        } catch {
+          errorText = "";
+        }
+
+        throw new Error(
+          `Gemini API request failed (${response.status}): ${errorText || "Unknown error"}`
+        );
+      }
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Gemini API returned an invalid JSON response.");
+      }
+
+      let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
+
+      text = text.trim().replace(/^```json/, "").replace(/```$/, "").trim();
+
+      try {
+        return JSON.parse(text);
+      } catch {
+        throw new Error("Gemini API returned an invalid JSON payload.");
+      }
+    } catch (err) {
+      if (attempt === maxRetries) {
+        throw err;
+      }
+      attempt++;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      delay *= 2;
     }
-
-    throw new Error(
-      `Gemini API request failed (${response.status}): ${errorText || "Unknown error"}`
-    );
-  }
-
-  let data;
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error("Gemini API returned an invalid JSON response.");
-  }
-
-  let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-
-  // gemini sometimes wraps the array in ```json fences
-  text = text.trim().replace(/^```json/, "").replace(/```$/, "").trim();
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error("Gemini API returned an invalid JSON payload.");
   }
 }
 
