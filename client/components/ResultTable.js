@@ -8,25 +8,25 @@ const COLUMNS = [
   "data_source",
 ];
 
-export default function ResultTable({ result }) {
+export default function ResultTable({ result, darkMode }) {
   return (
     <div>
       <div className="flex gap-4 mb-4 text-sm font-mono font-bold">
-        <div className="bg-green-300 border-2 border-black px-4 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <div className={`border ${darkMode ? "border-white bg-zinc-800 text-white" : "border-gray-300 bg-white text-black"} px-4 py-2 rounded-lg`}>
           SUCCESSFULLY IMPORTED: <span className="font-extrabold underline">{result.totalImported}</span>
         </div>
-        <div className="bg-red-300 border-2 border-black px-4 py-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <div className={`border ${darkMode ? "border-white bg-zinc-800 text-white" : "border-gray-300 bg-white text-black"} px-4 py-2 rounded-lg`}>
           SKIPPED/FAILED: <span className="font-extrabold underline">{result.totalSkipped}</span>
         </div>
       </div>
 
-      <div className="border-4 border-black bg-white overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className={`border ${darkMode ? "border-white" : "border-gray-300"} bg-transparent rounded-lg overflow-hidden`}>
         <div className="overflow-auto max-h-96">
           <table className="min-w-full text-sm text-center border-collapse font-mono">
-            <thead className="bg-green-600 text-white sticky top-0 border-b-4 border-black">
+            <thead className={`sticky top-0 border-b ${darkMode ? "border-white bg-zinc-700 text-white" : "border-gray-300 bg-gray-100 text-black"}`}>
               <tr>
                 {COLUMNS.map((c) => (
-                  <th key={c} className="px-4 py-2 border-r-2 border-black font-extrabold uppercase">
+                  <th key={c} className={`px-4 py-2 border-r ${darkMode ? "border-white" : "border-gray-300"} font-extrabold uppercase`}>
                     {c}
                   </th>
                 ))}
@@ -34,10 +34,10 @@ export default function ResultTable({ result }) {
             </thead>
             <tbody>
               {result.records.map((r, i) => (
-                <tr key={i} className="bg-white hover:bg-cyan-100 border-b-2 border-black">
+                <tr key={i} className={`border-b border-solid ${darkMode ? "border-white bg-zinc-800 text-white" : "border-gray-200 bg-white text-black"}`}>
                   {COLUMNS.map((c) => (
-                    <td key={c} className="px-4 py-2 border-r-2 border-black whitespace-nowrap font-semibold">
-                      {r[c] || "N/A"}
+                    <td key={c} className={`px-4 py-2 border-r ${darkMode ? "border-white" : "border-gray-200"} whitespace-nowrap font-semibold`}>
+                      {r[c] || "-"}
                     </td>
                   ))}
                 </tr>
@@ -48,14 +48,14 @@ export default function ResultTable({ result }) {
       </div>
 
       {result.skipped.length > 0 && (
-        <details className="mt-4 bg-yellow-100 border-2 border-black p-3 text-sm font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-          <summary className="cursor-pointer font-bold text-red-700">
-            [CLICK HERE TO VIEW SKIPPED ROWS] ({result.skipped.length})
+        <details className={`mt-4 border ${darkMode ? "border-white bg-zinc-800 text-white" : "border-gray-300 bg-white text-black"} p-3 text-sm font-mono rounded-lg`}>
+          <summary className="cursor-pointer font-bold text-red-600">
+            CLICK HERE TO VIEW SKIPPED ROWS ({result.skipped.length})
           </summary>
-          <ul className="mt-2 list-decimal list-inside space-y-1 text-black font-semibold">
+          <ul className="mt-2 list-decimal list-inside space-y-1 font-semibold">
             {result.skipped.map((s, i) => (
-              <li key={i} className="border-b border-dashed border-gray-400 pb-1">
-                <span className="text-red-600 font-bold">Reason:</span> {s.reason}
+              <li key={i} className={`border-b border-solid ${darkMode ? "border-zinc-700" : "border-gray-200"} pb-1`}>
+                <span className="text-red-500 font-bold">Reason:</span> {s.reason}
               </li>
             ))}
           </ul>

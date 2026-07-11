@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-export default function FileUpload({ onFileSelected }) {
+export default function FileUpload({ onFileSelected, darkMode }) {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
 
@@ -10,7 +10,7 @@ export default function FileUpload({ onFileSelected }) {
     const file = files?.[0];
     if (!file) return;
     if (!file.name.endsWith(".csv")) {
-      alert("Please upload a .csv file");
+      alert("Please upload a .csv file!");
       return;
     }
     onFileSelected(file);
@@ -29,8 +29,10 @@ export default function FileUpload({ onFileSelected }) {
         setDragging(false);
         handleFile(e.dataTransfer.files);
       }}
-      className={`border-2 border-dashed rounded-md p-10 text-center cursor-pointer ${
-        dragging ? "border-primary bg-blue-50" : "border-gray-300 bg-white"
+      className={`border border-solid p-12 text-center cursor-pointer font-mono transition-all rounded-lg ${
+        dragging
+          ? (darkMode ? "border-white bg-zinc-800" : "border-black bg-gray-200")
+          : (darkMode ? "border-zinc-500 bg-zinc-800" : "border-gray-400 bg-white")
       }`}
     >
       <input
@@ -40,10 +42,12 @@ export default function FileUpload({ onFileSelected }) {
         hidden
         onChange={(e) => handleFile(e.target.files)}
       />
-      <p className="text-gray-700 font-medium">
-        Drag & drop your CSV here, or click to browse
+      <p className="font-extrabold text-base">
+         DRAG AND DROP CSV FILE HERE OR CLICK TO BROWSE 
       </p>
-      <p className="text-sm text-gray-500 mt-1">Only .csv files are supported</p>
+      <p className="text-xs mt-2 opacity-70">
+        (Note: Only .csv files are allowed)
+      </p>
     </div>
   );
 }
