@@ -49,3 +49,6 @@ Frontend runs on `http://localhost:3000`, backend on `http://localhost:5000`.
 - Node.js + Express (backend)
 - Gemini API (AI field mapping)
 - PapaParse (CSV parsing)
+
+## test files
+I have also added some .csv test files inside the main folder of project , and tested them as well by my app.
