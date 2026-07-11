@@ -1,0 +1,6 @@
+Customer Name,Email Address,Phone,Company,Remarks
+John Doe,john@gmail.com,9876543210,ABC Pvt Ltd,Valid Record
+Alice Brown,,9988776655,XYZ Ltd,Valid because mobile exists
+Rahul Sharma,rahul@gmail.com,,TechSoft,Valid because email exists
+Unknown Person,,,No Company,Should be skipped
+Another User,,,ABC Ltd,Should also be skipped
